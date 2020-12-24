@@ -44,8 +44,6 @@ class getFlag(Resource):
         tocSelect = [startTime, endTime]
         ismissing = {'all_processes_statistics_ismissing':True,'cool_ismissing':True,'fu_temperature_ismissing':True,'m_ismissing':True,'fqc_ismissing':True} 
         data = getData(['upid', 'fqc_label'], {}, [], [], [], tocSelect, [], [], '', '')
-        # print(data)
-
         
         result = {}
         # print(data)

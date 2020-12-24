@@ -6,7 +6,7 @@ from flask import json
 from . import api
 import pandas as pd
 import numpy as np
-from ..utils import getData
+from ..utils import getData,SQLLabel,data_filter
 from ..utils import getFlagArr
 import json
 from sklearn.manifold import TSNE
@@ -46,33 +46,28 @@ class VisualizationCorrelation(Resource):
             200:
                 description: 执行成功
         """
-        #计算pearson相关系数矩阵
-        # def corr2_coeff(A, B):
-        #     A_mA = A - A.mean(1)[:, None]
-        #     B_mB = B - B.mean(1)[:, None]
+        # ismissing={'all_processes_statistics_ismissing':True}
+        # selection=['all_processes_statistics','all_processes_statistics_ismissing','cool_ismissing','fu_temperature_ismissing','m_ismissing','fqc_ismissing']
+        # data = getData(['all_processes_statistics','all_processes_statistics_ismissing','cool_ismissing','fu_temperature_ismissing','m_ismissing','fqc_ismissing'], ismissing, [], [], [], [startTime,endTime], [], [], '', '')
+        ismissing = {'dd.all_processes_statistics_ismissing':'0','dd.cool_ismissing':'0','dd.fu_temperature_ismissing':'0','dd.m_ismissing':'0','dd.fqc_ismissing':'0'}
+        data,col_names = SQLLabel(['dd.all_processes_statistics_ismissing','dd.cool_ismissing','dd.fu_temperature_ismissing','dd.m_ismissing','dd.fqc_ismissing'],ismissing, [], [], [], [startTime,endTime], [], [], '', '')
+        data,processdata=data_filter(data,col_names)
+        
+        processdata= data[col_names[5:134]].values
+        # np.array(data)
+        data=np.array(data)
+        fault=data[:,134:139]
+        print('fhuedui')
+        print(processdata.shape)
+        print(fault.shape)
+        col_names = col_names[5:134]
 
-        #     ssA = (A_mA**2).sum(1)
-        #     ssB = (B_mB**2).sum(1)
-
-        #     return np.dot(A_mA, B_mB.T) / 0.1+np.sqrt(np.dot(ssA[:, None],ssB[None]))
-        ismissing={'all_processes_statistics_ismissing':True}
-        selection=['all_processes_statistics','all_processes_statistics_ismissing','cool_ismissing','fu_temperature_ismissing','m_ismissing','fqc_ismissing']
-        data = getData(['all_processes_statistics','all_processes_statistics_ismissing','cool_ismissing','fu_temperature_ismissing','m_ismissing','fqc_ismissing'], ismissing, [], [], [], [startTime,endTime], [], [], '', '')
-        columnslabel=data[0][0]['columns']
-        len1=len(data)
-        processdata=[]
-        fault=[]
         jsondata={'data':[]}
         sortData = {}
-        for i in range(len1):
-            processdata.append(data[i][0]['data'])
-            temp=[]
-            for j in range(1,len(selection)):
-                temp.append(data[i][j])
-            fault.append(temp)
-        processdata=np.array(processdata)
-        processdata=processdata.swapaxes(0,1)
+
+        processdata=processdata.T
         fault=np.array(fault)
+        # print(fault.shape)
         fault=fault.swapaxes(0,1)
         nmi_matrix = np.zeros([len(processdata),len(fault)]) #初始化互信息矩阵
         for i in range(len(processdata)):
@@ -85,7 +80,7 @@ class VisualizationCorrelation(Resource):
             faultSum = np.array(result[i]) + faultSum
             sortData['fault'+repr(i)] = result[i]
             # print(len(result[i]))
-        jsondata['label']=columnslabel
+        jsondata['label']=col_names
         # print(len(columnslabel))
 
         dataIndex = np.array(range(len(processdata)))
@@ -95,17 +90,23 @@ class VisualizationCorrelation(Resource):
         sortDataFrame = sortDataFrame.sort_values(by="faultSum",ascending=True)
         indexArr = sortDataFrame['dataIndex'].values
 
-        sortData['label'] = columnslabel
+        sortData['label'] = col_names
         sortData = pd.DataFrame(sortData)
 
         sortData = sortData.loc[indexArr]
         sortData = sortData.to_dict('list')
-        corrdata=np.corrcoef(processdata)
+        print(processdata.shape)
+        print(type(processdata))
+        corrdata=np.corrcoef(processdata.astype(np.float32))
+        print(corrdata.shape)
+        print(np.isfinite(processdata).sum())
+        print(np.isinf(processdata).sum())
         X_embedded = TSNE(n_components=2).fit_transform(processdata)
         # print(X_embedded)
-        print(X_embedded.shape)
-        print(corrdata.shape)
+        # print(X_embedded.shape)
+
         sortData['corr']=corrdata.tolist()
         sortData['position']=X_embedded.tolist()
         return sortData, 200, {'Access-Control-Allow-Origin': '*'}
+        return processdata.tolist()
 api.add_resource(VisualizationCorrelation, '/v1.0/model/VisualizationCorrelation/<startTime>/<endTime>/')

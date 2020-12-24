@@ -5,9 +5,7 @@ from flask_restful import Resource, reqparse
 from flask import json
 from . import api
 import pandas as pd
-from ..utils import getData
-from ..utils import SQLplateselect
-from ..utils import getFlagArr
+from ..utils import getData,SQLplateselect,SQLLabel,data_filter
 from ..controller.VisualizationTsneController import getVisualizationTsne
 
 parser = reqparse.RequestParser(trim=True, bundle_errors=True)
@@ -41,15 +39,12 @@ class VisualizationTsne(Resource):
             200:
                 description: 执行成功
         """
-        # return {'hello': 'world'}
         tocSelect = [startTime, endTime]
-        ismissing = {'all_processes_statistics_ismissing':True,'cool_ismissing':True,'fu_temperature_ismissing':True,'m_ismissing':True,'fqc_ismissing':True} 
-        data=SQLplateselect(['d.upid', 'm.productcategory','d.toc', 'd.tgtwidth','d.tgtlength','d.tgtthickness','d.all_processes_statistics','d.fqc_label'],ismissing, [], [], [], tocSelect, [], [], '', '')
-        # print(data)
+        ismissing = {'dd.all_processes_statistics_ismissing':'0','dd.cool_ismissing':'0','dd.fu_temperature_ismissing':'0','dd.m_ismissing':'0','dd.fqc_ismissing':'0'} 
+        data,col_names = SQLLabel(['dd.all_processes_statistics','dd.fqc_label'],ismissing, [], [], [], tocSelect, [], [], '', '')
+        data,processdata = data_filter(data,col_names)
         VisualizationTsne = getVisualizationTsne()
-        json=VisualizationTsne.run(data)
-        # print(json)
-
+        json=VisualizationTsne.run(data,processdata)
 
         return json, 200, {'Access-Control-Allow-Origin': '*'}
 

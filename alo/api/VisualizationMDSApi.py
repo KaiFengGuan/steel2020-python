@@ -5,8 +5,7 @@ from flask_restful import Resource, reqparse
 from flask import json
 from . import api
 import pandas as pd
-from ..utils import getData
-from ..utils import getFlagArr
+from ..utils import getData,SQLLabel,data_filter
 from ..utils import SQLplateselect
 from ..controller.VisualizationMDSController import getVisualizationMDS
 
@@ -43,16 +42,13 @@ class VisualizationMDS(Resource):
         """
         # return {'hello': 'world'}
         tocSelect = [startTime, endTime]
-        print(tocSelect)
-        ismissing = {'all_processes_statistics_ismissing':True,'cool_ismissing':True,'fu_temperature_ismissing':True,'m_ismissing':True,'fqc_ismissing':True} 
-        # data = getData(['upid', 'platetype','toc', 'tgtwidth','tgtlength','tgtthickness','all_processes_statistics','fqc_label'], ismissing, [], [], [], tocSelect, [], [], '', '')
-        data=SQLplateselect(['d.upid', 'm.productcategory','d.toc', 'd.tgtwidth','d.tgtlength','d.tgtthickness','d.all_processes_statistics','d.fqc_label'],ismissing, [], [], [], tocSelect, [], [], '', '')
-        # print(data)
+        ismissing = {'dd.all_processes_statistics_ismissing':'0','dd.cool_ismissing':'0','dd.fu_temperature_ismissing':'0','dd.m_ismissing':'0','dd.fqc_ismissing':'0'} 
+        data,col_names = SQLLabel(['dd.all_processes_statistics','dd.fqc_label'],ismissing, [], [], [], tocSelect, [], [], '', '')
+        
+        data,processdata = data_filter(data,col_names)
         VisualizationMDS = getVisualizationMDS()
-        json=VisualizationMDS.run(data)
-        # print(json)
+        json=VisualizationMDS.run(data,processdata)
 
         return json, 200, {'Access-Control-Allow-Origin': '*'}
-
 
 api.add_resource(VisualizationMDS, '/v1.0/model/VisualizationMDS/<startTime>/<endTime>/')

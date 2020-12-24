@@ -90,22 +90,15 @@ class diagnosisDataApi(Resource):
         outOfGau = {}
         PCAT2 = {}
         PCASPE = {}
-        # myresult = getData()
-        # data = myresult['data']
-        # wideData = myresult['wideData']
         try:
-            # queue_msg = json.dumps({
-            #     'task_id': task_id
-            # })
-
             createDiagResu_instance = createDiagResu(upid)
             result, outOfGau, PCAT2, PCASPE = createDiagResu_instance.run(width, length, thickness,platetype)
-
 # used to fix remote data
             # createDiagResu_instance = createDiagResu(upid, startTime, endTime)
             # result, outOfGau, PCAT2, PCASPE = createDiagResu_instance.run()
 
         except Exception:
+            print('fhiosif')
             print(traceback.format_exc())
         return {'result': result, 'outOfGau': outOfGau, 'PCAT2': PCAT2, 'PCASPE': PCASPE}, 200, {'Access-Control-Allow-Origin': '*'}
 

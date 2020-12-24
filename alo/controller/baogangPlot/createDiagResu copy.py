@@ -13,7 +13,8 @@ from ...methods.baogangPlot.PCA import PCATEST
 from ...utils import SQLplateselect
 from ...methods.baogangPlot.dataInKind import dataInKind
 from ...methods.baogangPlot.setKindMethod import setKindMethod
-from ...utils import getFlagArr,getData,SQLLabel,unidimensional_monitoring,data_filter
+from ...utils import getFlagArr
+from ...utils import getData
 import datetime
 class createDiagResu:
     '''
@@ -39,34 +40,30 @@ class createDiagResu:
             Platetypes=[]
         else:
             Platetypes=platetype
-        
-        ismissing = {'dd.all_processes_statistics_ismissing':'0','dd.cool_ismissing':'0','dd.fu_temperature_ismissing':'0','dd.m_ismissing':'0','dd.fqc_ismissing':'0'} 
-        platedata,col_names = SQLLabel(['dd.fqc_label'],ismissing, [], [], [], [], [self.upid], [], '', '')
-        data =  pd.DataFrame(data = platedata, columns = col_names).dropna(axis=0,how='any').reset_index(drop = True)
+        ismissing = {'all_processes_statistics_ismissing':True,'cool_ismissing':True,'fu_temperature_ismissing':True,'m_ismissing':True,'fqc_ismissing':True}
+        data = getData(['upid', 'platetype', 'tgtwidth','tgtlength','tgtthickness','all_processes_statistics','fqc_label', 'toc'], ismissing, [], [], [], [], [self.upid], [], '', '')
+#       
+        # print(data)
         dataLabel = 0
-        data=data.values
-        # print(len(data))
-        # print(len(data[0]))
-        dataFlag = getFlagArr(data[0][134]['method1'])
+        dataFlag = getFlagArr(data[0][6]['method1'])
         dataAmount=0
         for j in dataFlag:
             dataAmount+=j
         if(dataAmount>=3):
             dataLabel = 1
-        time = data[0][4]
-        delta = datetime.timedelta(days = 365)
+        time = data[0][7]
+        delta = datetime.timedelta(days = 30)
         start = str(time - delta)
         end = str(time +delta)
 
-        otherWidth = [str(data[0][6] - width), str(data[0][6] + width)]
-        otherLen = [str(data[0][7] - length), str(data[0][7] + length)]
-        otherThick = [str(data[0][5] - thickness), str(data[0][5] + thickness)]
+        otherWidth = [str(data[0][2] - width), str(data[0][2] + width)]
+        otherLen = [str(data[0][3] - length), str(data[0][3] + length)]
+        otherThick = [str(data[0][4] - thickness), str(data[0][4] + thickness)]
         otherSelectTime = [start, end]
-        otherdata,col_names = SQLLabel(['dd.fqc_label'],ismissing, otherWidth, otherLen, otherThick, otherSelectTime, [], Platetypes, 'toc', '')
-        otherdata =  pd.DataFrame(data = otherdata, columns = col_names).dropna(axis=0,how='any').reset_index(drop = True)
-        raw_process_data = otherdata[col_names[5:134]]
-        otherdata = otherdata[((raw_process_data < 1e+10) & (raw_process_data > -1e+10)).sum(axis=1) == raw_process_data.shape[1]].reset_index(drop = True)
-        otherData=otherdata.values
+        otherData = SQLplateselect(['d.upid', 'm.productcategory', 'd.tgtwidth','d.tgtlength','d.tgtthickness','d.all_processes_statistics','d.fqc_label', 'd.toc'], 
+        ismissing, otherWidth, otherLen, otherThick, otherSelectTime, [], Platetypes, 'toc', '')
+        print(len(otherData))
+        
         labelArr = []
         badBoardData = []
         goodBoardData = []
@@ -74,7 +71,7 @@ class createDiagResu:
         goodBoardId = []
         
         for item in otherData:
-            flagArr = getFlagArr(item[134]['method1'])
+            flagArr = getFlagArr(item[6]['method1'])
             label=0
             amount=0
             for j in flagArr:
@@ -83,40 +80,31 @@ class createDiagResu:
                 label=1
             labelArr.append(label)
             if (label > 0):
-                badBoardId.append(item[1])
-                badBoardData.append(item[13:134].astype(np.float32))
+                badBoardId.append(item[0])
+                badBoardData.append(item[5]['data'])
             else:
-                goodBoardId.append(item[1])
-                goodBoardData.append(item[13:134].astype(np.float32))
+                goodBoardId.append(item[0])
+                goodBoardData.append(item[5]['data'])
         if (dataLabel == 1):
-            badBoardId.append(data[0][1])
-            badBoardData.append(data[0][13:134].astype(np.float32))
+            badBoardId.append(data[0][0])
+            badBoardData.append(data[0][5]['data'])
         else:
-            goodBoardId.append(data[0][1])
-            goodBoardData.append(data[0][13:134].astype(np.float32))
+            goodBoardId.append(data[0][0])
+            goodBoardData.append(data[0][5]['data'])
         badBoardData = np.array(badBoardData)
         goodBoardData = np.array(goodBoardData)
-        print(otherdata.shape)
-        print(goodBoardData.shape)
         allBoardId = goodBoardId + badBoardId
-        colonmName = col_names[13:134]
+        # print(badBoardData)
+        
+        
+        # print(allBoardId)
+        colonmName = otherData[0][5]['columns']
         startAddress = 0
         endAddress = -1
         dataName = colonmName[startAddress:endAddress]
         goodBoardData=goodBoardData[:,startAddress:endAddress]
         badBoardData=badBoardData[:,startAddress:endAddress]
         # allBoardData=allBoardData[:,startAddress:endAddress]
-        # print(goodBoardData.shape)
-        # print(np.argwhere(np.isnan(np.array(goodBoardData))))
-        # print(np.argwhere(np.isfinite(np.array(goodBoardData))))
-
-        
-        # # print(np.argwhere(np.isnan(np.array(goodBoardData))))
-        # # print(np.argwhere(np.isfinite(np.array(goodBoardData))))
-        # print(colonmName[72])
-        # return goodBoardData.tolist()
-
-
         goodSta = np.mean(goodBoardData, axis=0)
         scaler = preprocessing.StandardScaler().fit(goodBoardData)
         X_mean = scaler.mean_
@@ -193,7 +181,4 @@ class createDiagResu:
                 'l': dataProDown[i],
                 'u': dataProUp[i]
             })
-        goodBoardId.append(data[0][1])
-        otherdata=otherdata[otherdata["upid"].isin(goodBoardId)]
-        result=unidimensional_monitoring(data[0][1], otherdata, 0.25,col_names)
         return result, outOfGau, PCAT2, PCASPE
