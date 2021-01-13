@@ -90,9 +90,10 @@ class diagnosisDataApi(Resource):
         outOfGau = {}
         PCAT2 = {}
         PCASPE = {}
+        steeldata={}
         try:
             createDiagResu_instance = createDiagResu(upid)
-            result, outOfGau, PCAT2, PCASPE = createDiagResu_instance.run(width, length, thickness,platetype)
+            result, outOfGau, PCAT2, PCASPE,steeldata = createDiagResu_instance.run(width, length, thickness,platetype)
 # used to fix remote data
             # createDiagResu_instance = createDiagResu(upid, startTime, endTime)
             # result, outOfGau, PCAT2, PCASPE = createDiagResu_instance.run()
@@ -100,6 +101,6 @@ class diagnosisDataApi(Resource):
         except Exception:
             print('fhiosif')
             print(traceback.format_exc())
-        return {'result': result, 'outOfGau': outOfGau, 'PCAT2': PCAT2, 'PCASPE': PCASPE}, 200, {'Access-Control-Allow-Origin': '*'}
+        return {'result': result, 'outOfGau': outOfGau, 'PCAT2': PCAT2, 'PCASPE': PCASPE,'Steel':steeldata}, 200, {'Access-Control-Allow-Origin': '*'}
 
 api.add_resource(diagnosisDataApi, '/v1.0/baogangPlot/diagnosesdata')

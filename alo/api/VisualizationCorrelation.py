@@ -53,14 +53,14 @@ class VisualizationCorrelation(Resource):
         data,col_names = SQLLabel(['dd.all_processes_statistics_ismissing','dd.cool_ismissing','dd.fu_temperature_ismissing','dd.m_ismissing','dd.fqc_ismissing'],ismissing, [], [], [], [startTime,endTime], [], [], '', '')
         data,processdata=data_filter(data,col_names)
         
-        processdata= data[col_names[5:134]].values
+        processdata= data[col_names[13:134]].values
         # np.array(data)
         data=np.array(data)
         fault=data[:,134:139]
         print('fhuedui')
         print(processdata.shape)
         print(fault.shape)
-        col_names = col_names[5:134]
+        col_names = col_names[13:134]
 
         jsondata={'data':[]}
         sortData = {}
@@ -95,12 +95,12 @@ class VisualizationCorrelation(Resource):
 
         sortData = sortData.loc[indexArr]
         sortData = sortData.to_dict('list')
-        print(processdata.shape)
-        print(type(processdata))
+        # print(processdata.shape)
+        # print(type(processdata))
         corrdata=np.corrcoef(processdata.astype(np.float32))
-        print(corrdata.shape)
-        print(np.isfinite(processdata).sum())
-        print(np.isinf(processdata).sum())
+        # print(corrdata.shape)
+        # print(np.isfinite(processdata).sum())
+        # print(np.isinf(processdata).sum())
         X_embedded = TSNE(n_components=2).fit_transform(processdata)
         # print(X_embedded)
         # print(X_embedded.shape)

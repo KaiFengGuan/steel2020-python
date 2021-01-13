@@ -52,10 +52,12 @@ class getFlag(Resource):
             amount=0
             if 'method1' in item[1]:
                 flagArr=getFlagArr(item[1]['method1'])
-                for j in flagArr:
-                    amount+=j
-                if(amount>=ref):
-                    label=1
+                # for j in flagArr:
+                #     amount+=j
+                # if(amount>=ref):
+                #     label=1
+                # print(flagArr)
+                label=flagArr[1]
             result[item[0]] =  label
 
         # print(json)

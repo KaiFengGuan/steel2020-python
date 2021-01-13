@@ -40,10 +40,11 @@ class getVisualizationTsne:
             flagArr=getFlagArr(i[-1]['method1'])
             label=0
             amount=0
-            for j in flagArr:
-                amount+=j
-            if(amount>=ref):
-                label=1
+            # for j in flagArr:
+            #     amount+=j
+            # if(amount>=ref):
+            #     label=1
+            label = flagArr[1]
             upload_json[str(index)]={
                 "x":X_embedded[index][0].item(),
                 "y":X_embedded[index][1].item(),
