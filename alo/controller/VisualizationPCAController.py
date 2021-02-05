@@ -15,12 +15,14 @@ import os
 import pandas as pd
 import json
 import datetime
+import umap
 
-from sklearn.decomposition import KernelPCA
 from ..utils import getFlagArr
 from ..utils import ref
-
-
+# umap-learn
+# umap-learn[plot]
+# umap-learn[plot]
+# umap-learn
 class getVisualizationPCA:
     '''
     getVisualizationPCA
@@ -30,10 +32,11 @@ class getVisualizationPCA:
         print('生成实例')
 
     def run(self,data,process_data):
-
+        print(process_data.shape)  
         norm_process_data = (process_data - process_data.min()) / (process_data.max() - process_data.min())
-        X_transformed = KernelPCA(n_components=2).fit_transform(norm_process_data)
-
+        X_transformed = umap.UMAP().fit(norm_process_data).embedding_.astype('float64')
+        print(X_transformed.shape)      
+        print(type(X_transformed)) 
         index=0
         upload_json={}
         data=data.values

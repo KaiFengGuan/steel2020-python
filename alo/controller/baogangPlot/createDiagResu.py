@@ -196,12 +196,12 @@ class createDiagResu:
         goodBoardId.append(data[0][1])
         otherdata=otherdata[otherdata["upid"].isin(goodBoardId)]
         result=unidimensional_monitoring(data[0][1], otherdata, 0.25,col_names)
-        steel=data[0][1:8]
+        steel=data[0][1:11]
         steel[3]=str(steel[3])
         steel=steel.tolist()
-        labels=col_names[1:8]
-        del steel[3]
-        del labels[3]
+        labels=col_names[1:11]
+        # del steel[3]
+        # del labels[3]
         del steel[2]
         del labels[2]
         return result, outOfGau, PCAT2, PCASPE,{'labels':labels,'steel':steel}

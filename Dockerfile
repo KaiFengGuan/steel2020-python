@@ -6,6 +6,8 @@ WORKDIR /usr/src/app
 COPY . .
 # COPY ./config.txt /usr/src/app/config.txt
 
+RUN pip install umap-learn[plot]
+
 EXPOSE 5000
 
 CMD ["gunicorn", "-c", "gunicorn.conf", "run:app"]
