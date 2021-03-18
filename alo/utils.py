@@ -369,7 +369,7 @@ def getLabelData(SQLquery):
     cursor = conn.cursor()
     cursor.execute(SQLquery)
     rows = cursor.fetchall()
-
+    # print(SQLquery)
     # Extract the column names
     col_names = []
     for elt in cursor.description:
@@ -428,7 +428,7 @@ def SQLLabel(selection,ismissing,tgtwidthSelect,tgtlengthSelect,tgtthicknessSele
     if(AscOption==''):  #ASC
         ASC='';
     else:
-        ASC=' ORDER BY dd.'+AscOption+' DESC';
+        ASC=' ORDER BY dd.'+AscOption+' ASC';
     if(Limition==''):  #Limit
         Limit='';
     else:

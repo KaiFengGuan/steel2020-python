@@ -14,7 +14,7 @@ parser = reqparse.RequestParser(trim=True, bundle_errors=True)
 # @app.route('/')
 
 
-class VisualizationTsne(Resource):
+class GetData(Resource):
     '''
     SixDpictureUpDownQuantile
     '''
@@ -41,12 +41,12 @@ class VisualizationTsne(Resource):
         """
         tocSelect = [startTime, endTime]
         ismissing = {'dd.all_processes_statistics_ismissing':'0','dd.cool_ismissing':'0','dd.fu_temperature_ismissing':'0','dd.m_ismissing':'0','dd.fqc_ismissing':'0'} 
-        data,col_names = SQLLabel(['dd.all_processes_statistics','dd.fqc_label'],ismissing, [], [], [], tocSelect, [], [], '', '')
+        data,col_names = SQLLabel(['dd.fqc_label'],ismissing, [], [], [], tocSelect, [], [], '', '')
         data,processdata = data_filter(data,col_names)
         VisualizationTsne = getVisualizationTsne()
-        json=VisualizationTsne.run(data,processdata)
+        json=VisualizationTsne.run(data,processdata,col_names)
 
         return json, 200, {'Access-Control-Allow-Origin': '*'}
 
 
-api.add_resource(VisualizationTsne, '/v1.0/model/VisualizationTsne/<startTime>/<endTime>/')
+api.add_resource(GetData, '/v1.0/model/VisualizationTsne/<startTime>/<endTime>/')

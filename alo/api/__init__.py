@@ -23,3 +23,4 @@ from . import Visualization
 from . import VisualizationCorrelation
 from . import VisualizationPlatetypes
 from . import Platetypes
+from . import GetData

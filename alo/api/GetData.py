@@ -1,13 +1,12 @@
 '''
-VisualizationMDSApi
+VisualizationTsneApi
 '''
 from flask_restful import Resource, reqparse
 from flask import json
 from . import api
 import pandas as pd
-from ..utils import getData,SQLLabel,data_filter
-from ..utils import SQLplateselect
-from ..controller.VisualizationMDSController import getVisualizationMDS
+from ..utils import getData,SQLplateselect,SQLLabel,data_filter,getFlagArr
+from ..controller.VisualizationTsneController import getVisualizationTsne
 
 parser = reqparse.RequestParser(trim=True, bundle_errors=True)
 
@@ -15,7 +14,7 @@ parser = reqparse.RequestParser(trim=True, bundle_errors=True)
 # @app.route('/')
 
 
-class VisualizationMDS(Resource):
+class Data(Resource):
     '''
     SixDpictureUpDownQuantile
     '''
@@ -24,7 +23,7 @@ class VisualizationMDS(Resource):
         get
         ---
         tags:
-          - 可视化马雷图部分MDS
+          - 可视化马雷图部分TSNE
         parameters:
             - in: path
               name: startTime
@@ -40,15 +39,27 @@ class VisualizationMDS(Resource):
             200:
                 description: 执行成功
         """
-        # return {'hello': 'world'}
         tocSelect = [startTime, endTime]
         ismissing = {'dd.all_processes_statistics_ismissing':'0','dd.cool_ismissing':'0','dd.fu_temperature_ismissing':'0','dd.m_ismissing':'0','dd.fqc_ismissing':'0'} 
-        data,col_names = SQLLabel(['dd.fqc_label'],ismissing, [], [], [], tocSelect, [], [], '', '')
-        
+        data,col_names = SQLLabel(['dd.fqc_label'],ismissing, [], [], [], tocSelect, [], [], 'toc', '')
         data,processdata = data_filter(data,col_names)
-        VisualizationMDS = getVisualizationMDS()
-        json=VisualizationMDS.run(data,processdata,col_names)
+        data=data.values
+        result = []
+        for i in data:
+            i[4] = json.dumps(i[4], default=str, ensure_ascii=False)
+            flagArr=getFlagArr(i[-1]['method1'])
+            label=0
+            amount=0
+            # for j in flagArr:
+            #     amount+=j
+            # if(amount>=ref):
+            #     label=1
+            i[-1] = flagArr[1]
+            result.append(dict(zip(col_names, i.tolist())))
+        # json.dumps(dict(zip(data.tolist(), col_names.tolist()))
 
-        return json, 200, {'Access-Control-Allow-Origin': '*'}
+        return result, 200, {'Access-Control-Allow-Origin': '*'}
+        # json.dumps(data.tolist())
 
-api.add_resource(VisualizationMDS, '/v1.0/model/VisualizationMDS/<startTime>/<endTime>/')
+
+api.add_resource(Data, '/v1.0/model/data/<startTime>/<endTime>/')

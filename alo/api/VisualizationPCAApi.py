@@ -43,11 +43,11 @@ class VisualizationPCA(Resource):
 
         tocSelect = [startTime, endTime]
         ismissing = {'dd.all_processes_statistics_ismissing':'0','dd.cool_ismissing':'0','dd.fu_temperature_ismissing':'0','dd.m_ismissing':'0','dd.fqc_ismissing':'0'} 
-        data,col_names = SQLLabel(['dd.all_processes_statistics','dd.fqc_label'],ismissing, [], [], [], tocSelect, [], [], '', '')
+        data,col_names = SQLLabel(['dd.fqc_label'],ismissing, [], [], [], tocSelect, [], [], '', '')
         
         data,processdata = data_filter(data,col_names)
         VisualizationPCAdata = getVisualizationPCA()
-        jsondata=VisualizationPCAdata.run(data,processdata)
+        jsondata=VisualizationPCAdata.run(data,processdata,col_names)
         return jsondata, 200, {'Access-Control-Allow-Origin': '*'}
 
 api.add_resource(VisualizationPCA, '/v1.0/model/VisualizationPCA/<startTime>/<endTime>/')
