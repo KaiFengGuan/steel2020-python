@@ -5,12 +5,7 @@ VisualizationTsneController
 import math
 import requests
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
 
-from itertools import groupby
-from scipy import interpolate
-from dateutil.parser import parse
 import os
 import pandas as pd
 import json

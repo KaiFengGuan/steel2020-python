@@ -6,7 +6,7 @@ WORKDIR /usr/src/app
 COPY . .
 # COPY ./config.txt /usr/src/app/config.txt
 
-RUN pip install umap-learn[plot]
+RUN pip install umap
 
 EXPOSE 5000
 

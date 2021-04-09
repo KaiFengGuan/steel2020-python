@@ -72,9 +72,13 @@ class plateYieldStaistics(Resource):
           modelFit['toc'].append(item[1])
           modelFit['upid'].append(item[0])
           flagArr = getFlagArr(item[2]['method1'])
-          for label in flagArr:
-            msum = msum + label
-          if (msum >= ref):
+          # for label in flagArr:
+          #   msum = msum + label
+          # if (msum >= ref):
+          #   modelFit['flag'].append(1)
+          # else:
+          #   modelFit['flag'].append(0)
+          if (flagArr[1] == 0):
             modelFit['flag'].append(1)
           else:
             modelFit['flag'].append(0)

@@ -17,6 +17,8 @@ Clone project and install dependencies
 $ pip3 install -r requirements.txt
 ```
 
+image name : 202.118.21.236:5000/python-umap-20210409
+
 Start the server
 ```bash
 $ python run.py
