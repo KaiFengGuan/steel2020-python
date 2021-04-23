@@ -112,45 +112,43 @@ class Visualization(Resource):
           coolright=1
           coolleft=1
           for m in range(len(name)):  ##冷却
-            nameindex.append(len(json.loads(sampledata[0][0][name[m]])['data']))
-            coolKate=[]
-            sampletemp=json.loads(sampledata[0][0][name[m]])['data']
-            for i in range(len1):
-              cooltemp=json.loads(data[i][0][name[m]])['data']
-              if(len(cooltemp)>nameindex[m]+coolright):continue
-              if(len(cooltemp)<nameindex[m]-coolleft):continue
-              while(len(cooltemp)!=nameindex[m]):  #冷却插值
-                  cooltemp=scipyutils(nameindex[m],cooltemp)
-              coolKate.append(cooltemp)
-            # print(len(coolKate))            
-            sampletemp=np.array(sampletemp)
-            coolKate=np.array(coolKate)
-            minroll=np.percentile(coolKate, deviation, axis=0)
-            maxroll=np.percentile(coolKate, 100-deviation, axis=0)
-            samplearray=np.concatenate([minroll,maxroll,sampletemp]) 
-            jsondata[name[m]]={"min":list(minroll),"max":list(maxroll),'sample':list(sampletemp),"range":[(np.min(samplearray)),np.max(samplearray)]}
+            if(len(sampledata[0][0][name[m]]) != 0):
+              nameindex.append(len(json.loads(sampledata[0][0][name[m]])['data']))
+              coolKate=[]
+              sampletemp=json.loads(sampledata[0][0][name[m]])['data']
+              for i in range(len1):
+                cooltemp=json.loads(data[i][0][name[m]])['data']
+                if(len(cooltemp)>nameindex[m]+coolright):continue
+                if(len(cooltemp)<nameindex[m]-coolleft):continue
+                while(len(cooltemp)!=nameindex[m]):  #冷却插值
+                    cooltemp=scipyutils(nameindex[m],cooltemp)
+                coolKate.append(cooltemp)           
+              sampletemp=np.array(sampletemp)
+              coolKate=np.array(coolKate)
+              minroll=np.percentile(coolKate, deviation, axis=0)
+              maxroll=np.percentile(coolKate, 100-deviation, axis=0)
+              samplearray=np.concatenate([minroll,maxroll,sampletemp]) 
+              jsondata[name[m]]={"min":list(minroll),"max":list(maxroll),'sample':list(sampletemp),"range":[(np.min(samplearray)),np.max(samplearray)]}
           #二维温度场
           name1="Scanner"                
           coolKate=[]
           sampletemp=[]
-          nameindex1=len(json.loads(sampledata[0][1]['Scanner'])['data'])
-          sampletemp=np.array(json.loads(sampledata[0][1]['Scanner'])['data']).mean(axis=1)
-          for i in range(len1):
-            cooltemp=np.array(json.loads(data[i][1]['Scanner'])['data']).mean(axis=1)
-            cooltemp=list(cooltemp)
-            if(len(cooltemp)>nameindex1+coolright):continue
-            if(len(cooltemp)<nameindex1-coolleft):continue
-            while(len(cooltemp)!=nameindex1):  #冷却插值
-              cooltemp=scipyutils(nameindex1,cooltemp)
-            coolKate.append(cooltemp)
-          coolKate=np.array(coolKate)
-          mincool=np.percentile(coolKate, deviation, axis=0)
-          maxcool=np.percentile(coolKate, 100-deviation, axis=0)
-          samplearray=np.concatenate([minroll,maxroll,sampletemp]) 
-          # mincool = np.round(mincool,2)
-          # maxcool = np.round(maxcool,2)
-          # samplearray = np.round(samplearray,2)
-          jsondata[name1]={"min":list(mincool),"max":list(maxcool),'sample':list(sampletemp),"range":[(np.min(samplearray)),np.max(samplearray)]} 
+          if(len(sampledata[0][1]['Scanner']) != 0):
+            nameindex1=len(json.loads(sampledata[0][1]['Scanner'])['data'])
+            sampletemp=np.array(json.loads(sampledata[0][1]['Scanner'])['data']).mean(axis=1)
+            for i in range(len1):
+              cooltemp=np.array(json.loads(data[i][1]['Scanner'])['data']).mean(axis=1)
+              cooltemp=list(cooltemp)
+              if(len(cooltemp)>nameindex1+coolright):continue
+              if(len(cooltemp)<nameindex1-coolleft):continue
+              while(len(cooltemp)!=nameindex1):  #冷却插值
+                cooltemp=scipyutils(nameindex1,cooltemp)
+              coolKate.append(cooltemp)
+            coolKate=np.array(coolKate)
+            mincool=np.percentile(coolKate, deviation, axis=0)
+            maxcool=np.percentile(coolKate, 100-deviation, axis=0)
+            samplearray=np.concatenate([minroll,maxroll,sampletemp]) 
+            jsondata[name1]={"min":list(mincool),"max":list(maxcool),'sample':list(sampletemp),"range":[(np.min(samplearray)),np.max(samplearray)]} 
 
         if (process=='heat'):
           name=['temp_seg_ul_1','temp_seg_ul_2','temp_seg_dl_s','temp_seg_ur_1','temp_seg_ur_2','temp_seg_dr_s']
@@ -163,41 +161,20 @@ class Visualization(Resource):
             heatKate=[]
             sampletemp=json.loads(sampledata[0][0]['Fufladc'])['data'][m]
             for i in range(len1): 
-              heattemp=json.loads(data[i][0]['Fufladc'])['data'][m]
-              if(len(heattemp)>=nameindex[m]+heatright):continue
-              if(len(heattemp)<=nameindex[m]-heatleft):continue
-              while(len(heattemp)!=nameindex[m]):  #插值
-                heattemp=scipyutils(nameindex[m],heattemp)
-              heatKate.append(heattemp)
-            # print(len(heatKate))            
+              if not data[i][0] is None:
+                if(len(json.loads(data[i][0]['Fufladc'])['data']) != 0):
+                  heattemp=json.loads(data[i][0]['Fufladc'])['data'][m]
+                  if(len(heattemp)>=nameindex[m]+heatright):continue
+                  if(len(heattemp)<=nameindex[m]-heatleft):continue
+                  while(len(heattemp)!=nameindex[m]):  #插值
+                    heattemp=scipyutils(nameindex[m],heattemp)
+                  heatKate.append(heattemp)         
             sampletemp=np.array(sampletemp)
             heatKate=np.array(heatKate)
             minroll=np.percentile(heatKate, deviation, axis=0)
             maxroll=np.percentile(heatKate, 100-deviation, axis=0)
             samplearray=np.concatenate([minroll,maxroll,sampletemp]) 
-            jsondata[name[m]]={"min":list(minroll),"max":list(maxroll),'sample':list(sampletemp),"range":[(np.min(samplearray)),np.max(samplearray)]}
-          #二维温度场
-          heatKate=[]
-          sampletemp=[]
-          nameindex1=len(json.loads(sampledata[0][0]['Scanner'])['data'])
-          sampletemp=np.array(json.loads(sampledata[0][0]['Scanner'])['data']).mean(axis=1)
-          for i in range(len1):
-            heattemp=np.array(json.loads(data[i][0]['Scanner'])['data']).mean(axis=1)
-            heattemp=list(heattemp)
-            if(len(heattemp)>nameindex1+heatright):continue
-            if(len(heattemp)<nameindex1-heatleft):continue
-            while(len(heattemp)!=nameindex1):  #插值
-              heattemp=scipyutils(nameindex1,heattemp)
-            heatKate.append(heattemp)
-          heatKate=np.array(heatKate)
-          # print(len(heatKate))
-          minheat=np.percentile(heatKate, deviation, axis=0)
-          maxheat=np.percentile(heatKate, 100-deviation, axis=0)
-          samplearray=np.concatenate([minroll,maxroll,sampletemp]) 
-          # minheat = np.round(minheat,2)
-          # maxheat = np.round(maxheat,2)
-          # samplearray = np.round(samplearray,2)
-          jsondata[name1]={"min":list(minheat),"max":list(maxheat),'sample':list(sampletemp),"range":[(np.min(samplearray)),np.max(samplearray)]}       
+            jsondata[name[m]]={"min":list(minroll),"max":list(maxroll),'sample':list(sampletemp),"range":[(np.min(samplearray)),np.max(samplearray)]}       
         
         if(process=='roll'):
           name=["bendingforce","bendingforcebot","bendingforcetop","rollforce","rollforceds","rollforceos","screwdown","shiftpos","speed","torque","torquebot","torquetop"]
@@ -212,16 +189,18 @@ class Visualization(Resource):
               rollKate=[]
               sampletemp=np.array(json.loads(sampledata[0][0][serchkey])['data'][m]).mean(axis=1)
               for i in range(len1): #n*k*8->n*k(sample)
-                rolltemp=list(np.array(json.loads(data[i][0][serchkey])['data'][m]).mean(axis=1)) #k*8->k
-                if(len(rolltemp)>nameindex[m]+rollright):
-                  continue
-                if(len(rolltemp)<nameindex[m]-rollleft):
-                  continue
-                while(len(rolltemp)<nameindex[m]):
-                  rolltemp.append(rolltemp[-1])
-                while(len(rolltemp)>nameindex[m]):
-                  rolltemp=rolltemp[:nameindex[m]]
-                rollKate.append(rolltemp)
+                if not data[i][0] is None:
+                  if(len(np.array(json.loads(data[i][0][serchkey])['data'][m]) != 0)):
+                    rolltemp=list(np.array(json.loads(data[i][0][serchkey])['data'][m]).mean(axis=1)) #k*8->k
+                    if(len(rolltemp)>nameindex[m]+rollright):
+                      continue
+                    if(len(rolltemp)<nameindex[m]-rollleft):
+                      continue
+                    while(len(rolltemp)<nameindex[m]):
+                      rolltemp.append(rolltemp[-1])
+                    while(len(rolltemp)>nameindex[m]):
+                      rolltemp=rolltemp[:nameindex[m]]
+                    rollKate.append(rolltemp)
               # print(len(rollKate))
               rollKate=np.array(rollKate)
               minroll=np.percentile(rollKate, deviation, axis=0)
