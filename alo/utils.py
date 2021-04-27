@@ -268,8 +268,8 @@ def getData(selection,ismissing,tgtwidthSelect,tgtlengthSelect,tgtthicknessSelec
 
     SQL=SQLselect(selection,ismissing,tgtwidthSelect,tgtlengthSelect,tgtthicknessSelect,tocSelect,UpidSelect,Platetypes,AscOption,Limition)
 
-    # conn = psycopg2.connect(database='BSData20190713', user='postgres', password='616616', host='219.216.80.18',port='5432')
-    conn = psycopg2.connect(database='bg', user='postgres', password='woshimima', host='202.118.21.236',port='5432')
+    conn = psycopg2.connect(database='BSData20190713', user='postgres', password='616616', host='219.216.80.18',port='5432')
+    # conn = psycopg2.connect(database='bg', user='postgres', password='woshimima', host='202.118.21.236',port='5432')
 
     cursor = conn.cursor()
     cursor.execute(SQL)
@@ -352,8 +352,8 @@ def getSQLData(SQLquery):
     # configArr = readConfig() 
     # conn = psycopg2.connect(database=configArr[0], user=configArr[1], password=configArr[2], host=configArr[3],port=configArr[4])
 
-    # conn = psycopg2.connect(database='BSData20190713', user='postgres', password='616616', host='219.216.80.18',port='5432')
-    conn = psycopg2.connect(database='bg', user='postgres', password='woshimima', host='202.118.21.236',port='5432')
+    conn = psycopg2.connect(database='BSData20190713', user='postgres', password='616616', host='219.216.80.18',port='5432')
+    # conn = psycopg2.connect(database='bg', user='postgres', password='woshimima', host='202.118.21.236',port='5432')
 
     cursor = conn.cursor()
     cursor.execute(SQLquery)
@@ -363,8 +363,8 @@ def getSQLData(SQLquery):
     return rows
 def getLabelData(SQLquery): 
 
-    # conn = psycopg2.connect(database='BSData20190713', user='postgres', password='616616', host='219.216.80.18',port='5432')
-    conn = psycopg2.connect(database='bg', user='postgres', password='woshimima', host='202.118.21.236',port='5432')
+    conn = psycopg2.connect(database='BSData20190713', user='postgres', password='616616', host='219.216.80.18',port='5432')
+    # conn = psycopg2.connect(database='bg', user='postgres', password='woshimima', host='202.118.21.236',port='5432')
 
     cursor = conn.cursor()
     cursor.execute(SQLquery)
