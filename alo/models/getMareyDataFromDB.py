@@ -101,7 +101,7 @@ class GetMareyData:
         left join dcenter.l2_cc_pdi lcp on lmpt.slabid = lcp.slab_no)
         left join dcenter.l2_cc_postcalc lcpc on lmpt.slabid = lcpc.slab_no
         left join dcenter.l2_cc_preset lcps on lmpt.slabid = lcps.slab_no
-        left join dcenter.l2_m_psc_pre_run l2mppr on l2mppr.slabid = lmpt.slabid
+        left join dcenter.l2_m_psc_pre_run l2mppr on l2mppr.slabid = lmpt.slabid and l2mppr.run = lmpt.pass
         '''
 
         SQLquery = (SQLQueryStations if (type=="stations") else SQLQueryTimes) + '''
