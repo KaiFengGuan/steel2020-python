@@ -126,7 +126,7 @@ class GetProcessVisualizationData:
                             filter_rdata = _pass_i_train[_pass_i_train > 0]
                         if status < 0:
                             filter_rdata = np.absolute(_pass_i_train)
-                        steel["sample"].append(self.appendRollSampleData(_pass_i_sample, sample_upid))
+                        steel["sample"].append(self.appendRollSampleData(np.absolute(_pass_i_sample), sample_upid))
 
 
                     if len(filter_rdata) != 0:
