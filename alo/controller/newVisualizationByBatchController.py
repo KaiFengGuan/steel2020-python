@@ -71,7 +71,7 @@ class GetProcessVisualizationData:
         self.sampledata = pd.DataFrame(data=sampledata, columns=col_names).dropna(axis=0, how='any').reset_index(drop=True)
 
     def getRoll(self):
-        if len(self.data) == 0:
+        if len(self.data) == 0 or len(self.sampledata) == 0:
             return 204, {}
 
         names = ["bendingforce", "bendingforcebot", "bendingforcetop", "rollforce", "rollforceds", "rollforceos",
@@ -143,7 +143,7 @@ class GetProcessVisualizationData:
         return 200, _columns_result
 
     def getHeat(self, box_num):
-        if len(self.data) == 0:
+        if len(self.data) == 0 or len(self.sampledata) == 0:
             return 204, {}
 
         names = ['seg_u', 'seg_d', 'plate', 'time']
@@ -208,7 +208,7 @@ class GetProcessVisualizationData:
         return 200, result
 
     def getCool(self, box_num, divide_percent):
-        if len(self.data) == 0:
+        if len(self.data) == 0 or len(self.sampledata) == 0:
             return 204, {}
 
         names = ['p1', 'p2', 'p3', 'p4', 'p6']
