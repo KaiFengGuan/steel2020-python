@@ -35,9 +35,6 @@ class newComputeMareyData:
 
         # print(len(self.marey_data))
 
-    def printData(self):
-        print(self.marey_data)
-
     def newGetMareyStations(self):
         if len(self.marey_data) == 0:
             return 204, []
@@ -123,6 +120,7 @@ class newComputeMareyData:
             # 加热工序站点时间计算
             ## realTime
             fu_discharge_time = plate_data.discharge_time
+            # 0101
             fu_charging_time = plate_data.discharge_time - dt.timedelta(minutes=plate_data.in_fce_time)
             staying_time_pre = fu_charging_time + dt.timedelta(minutes=plate_data.staying_time_pre)
             staying_time_1 = staying_time_pre + dt.timedelta(minutes=plate_data.staying_time_1)
@@ -130,11 +128,17 @@ class newComputeMareyData:
             staying_time_soak = staying_time_2 + dt.timedelta(minutes=plate_data.staying_time_soak)
             ## time
             c_fu_discharge_time = fu_discharge_time
+            # 0102
             c_staying_time_pre = c_fu_discharge_time - (fu_discharge_time - staying_time_pre) / compressed_factor
+            # 0103
             c_staying_time_1 = c_fu_discharge_time - (fu_discharge_time - staying_time_1) / compressed_factor
+            # 0104
             c_staying_time_2 = c_fu_discharge_time - (fu_discharge_time - staying_time_2) / compressed_factor
+            # 0105
             c_staying_time_soak = c_fu_discharge_time - (fu_discharge_time - staying_time_soak) / compressed_factor
+            # 0106
             c_fu_charging_time = c_fu_discharge_time - (fu_discharge_time - fu_charging_time) / compressed_factor
+            # 总时间
             fuTotalTimeAfter = (c_fu_discharge_time - c_fu_charging_time).total_seconds()
 
             ## 数据储存

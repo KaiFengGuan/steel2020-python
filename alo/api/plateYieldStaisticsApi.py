@@ -79,17 +79,6 @@ class plateYieldStaistics(Resource):
                     month_data['flag'].append(1)
                 else:
                     month_data['flag'].append(0)
-
-          # msum = 0
-          # month_data['toc'].append(item[1])
-          # month_data['upid'].append(item[0])
-          # flagArr = getFlagArr(item[2]['method1'])
-          # for label in flagArr:
-          #   msum = msum + label
-          # if (msum >= ref):
-          #   month_data['flag'].append(1)
-          # else:
-          #   month_data['flag'].append(0)
         month_data = pd.DataFrame(month_data)
         # print(month_data['flag'].shape)
         PlateYieldStaistics = getDataPlateYieldAndFlag(startTime,endTime)
